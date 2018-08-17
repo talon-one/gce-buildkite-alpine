@@ -36,3 +36,10 @@ This repo contains everything you need use buildkite on GCE.
         VBoxManage internalcommands converttoraw filepath/to/disk.vdi  disk.raw
 12. Pack it to .tar.gz tar -Sczf disk.raw.tar.gz disk.raw
 ```
+
+# TODO
+- optional `docker login`
+- optional `buildkite-sshkey` 
+
+# Changelog
+1.0 Initial release
