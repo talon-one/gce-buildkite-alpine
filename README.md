@@ -38,6 +38,8 @@ This repo contains everything you need use buildkite on GCE.
 ```
 
 # Changelog
+```
 1.0 Initial release
-1.1 * optional `buildkite-sshkey`
+1.1 * optional buildkite-sshkey
     * user namespaces for docker
+```
