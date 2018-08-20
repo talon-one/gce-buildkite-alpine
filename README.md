@@ -37,9 +37,7 @@ This repo contains everything you need use buildkite on GCE.
 12. Pack it to .tar.gz tar -Sczf disk.raw.tar.gz disk.raw
 ```
 
-# TODO
-- optional `docker login`
-- optional `buildkite-sshkey` 
-
 # Changelog
 1.0 Initial release
+1.1 * optional `buildkite-sshkey`
+    * user namespaces for docker

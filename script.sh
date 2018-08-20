@@ -145,9 +145,26 @@ EOF
 }
 
 function install_docker {
-    apk add docker
+    apk add docker shadow sudo
     rc-update add docker default
     rc-service docker start
+
+    case "${items[@]}" in *BuildKite*)
+        # if buildkite enabled, run docker containers as buildkite user
+        mkdir /etc/docker 2>&1 || true
+        cat <<'EOF' > /etc/docker/daemon.json
+{
+    "userns-remap": "buildkite"
+}
+EOF
+        cat <<'EOF' > /etc/subuid
+buildkite:100000:65536
+EOF
+        cat <<'EOF' > /etc/subgid
+buildkite:100000:65536
+EOF
+    ;;
+    esac
 }
 
 function install_docker_compose {
@@ -175,11 +192,16 @@ function install_buildkite {
     chmod -R 0755 /etc/buildkite-agent
     chmod 0755 /usr/sbin/buildkite-agent
 
+    # add a group
+    groupadd --gid 100000 buildkite
     # add user
-    useradd buildkite --create-home --shell /sbin/nologin
+    useradd --create-home --shell /sbin/nologin --uid 100000 --gid 100000 buildkite
 
-    # add user to docker group
-    usermod --groups docker --append buildkite
+    case "${items[@]}" in *Docker*)
+        # add user to docker group
+        usermod --groups docker --append buildkite
+    ;;
+    esac
 
     cat <<'EOF' > /etc/init.d/buildkite-agent
 #!/sbin/openrc-run
@@ -239,18 +261,16 @@ start() {
     # fetch sshkey
     key=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-sshkey" -H "Metadata-Flavor: Google")
     status=$?
-    if [ $status -ne 0 ]; then
-        echo "Unable to get buildkite-sshkey"
-        exit $status
-    fi
-    mkdir /home/buildkite/.ssh 2>&1 || true
-    echo $key | base64 --decode > /home/buildkite/.ssh/identity
-    cat <<'END' > /home/buildkite/.ssh/config
-Host *
-    IdentityFile /home/buildkite/.ssh/identity
+    if [ $status -eq 0 ]; then
+        mkdir /home/buildkite/.ssh 2>&1 || true
+        echo $key | base64 --decode > /home/buildkite/.ssh/identity
+        cat <<'END' > /home/buildkite/.ssh/config
+    Host *
+        IdentityFile /home/buildkite/.ssh/identity
 END
-    chown -hR buildkite:buildkite /home/buildkite/.ssh
-    chmod -R 0700 /home/buildkite/.ssh
+        chown -hR buildkite:buildkite /home/buildkite/.ssh
+        chmod -R 0700 /home/buildkite/.ssh
+    fi
 }
 EOF
     chmod 0700 /etc/init.d/buildkite-agent-settings
