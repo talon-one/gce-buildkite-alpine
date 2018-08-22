@@ -42,4 +42,7 @@ This repo contains everything you need use buildkite on GCE.
 1.0 Initial release
 1.1 * optional buildkite-sshkey
     * user namespaces for docker
+1.2 * Specify the count of buildkite agents using buildkite-agent-count
+    * take name from google cloud as buildkite agent name
+    * cronjobs to cleanup old docker files
 ```

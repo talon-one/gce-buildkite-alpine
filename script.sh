@@ -165,6 +165,70 @@ buildkite:100000:65536
 EOF
     ;;
     esac
+
+    # install garbage collection cronjobs
+    cat << 'EOF' > /etc/periodic/hourly/docker-gc
+#!/bin/bash
+set -euo pipefail
+
+DOCKER_PRUNE_UNTIL=${DOCKER_PRUNE_UNTIL:-4h}
+
+## ------------------------------------------
+## Prune stuff that doesn't affect cache hits
+
+docker network prune --force --filter "until=${DOCKER_PRUNE_UNTIL}"
+docker container prune --force --filter "until=${DOCKER_PRUNE_UNTIL}"
+EOF
+
+    cat << 'EOF' > /usr/sbin/check-disk-space.sh
+#!/bin/bash
+set -euo pipefail
+
+DISK_MIN_AVAILABLE=${DISK_MIN_AVAILABLE:-1048576} # 1GB
+DISK_MIN_INODES=${DISK_MIN_INODES:-250000} # docker needs lots
+
+DOCKER_DIR="/var/lib/docker/"
+
+disk_avail=$(df -k --output=avail "$DOCKER_DIR" | tail -n1)
+
+echo "Disk space free: $(df -k -h --output=avail "$DOCKER_DIR" | tail -n1 | sed -e 's/^[[:space:]]//')"
+
+if [[ $disk_avail -lt $DISK_MIN_AVAILABLE ]]; then
+  echo "Not enough disk space free, cutoff is ${DISK_MIN_AVAILABLE} 🚨" >&2
+  exit 1
+fi
+
+inodes_avail=$(df -k --output=iavail "$DOCKER_DIR" | tail -n1)
+
+echo "Inodes free: $(df -k -h --output=iavail "$DOCKER_DIR" | tail -n1 | sed -e 's/^[[:space:]]//')"
+
+if [[ $inodes_avail -lt $DISK_MIN_INODES ]]; then
+  echo "Not enough inodes free, cutoff is ${DISK_MIN_INODES} 🚨" >&2
+  exit 1
+fi
+EOF
+
+    chmod 0700 /usr/sbin/check-disk-space.sh
+
+    cat << 'EOF' > /etc/periodic/hourly/docker-low-disk-gc
+#!/bin/bash
+set -euo pipefail
+
+DOCKER_PRUNE_UNTIL=${DOCKER_PRUNE_UNTIL:-1h}
+## -----------------------------------------------------------------
+## Check disk, we only want to prune images/containers if we have to
+
+if ! /usr/sbin/bk-check-disk-space.sh ; then
+  echo "Cleaning up docker resources older than ${DOCKER_PRUNE_UNTIL}"
+  docker image prune --all --force --filter "until=${DOCKER_PRUNE_UNTIL}"
+
+  if ! /usr/sbin/bk-check-disk-space.sh ; then
+    echo "Disk health checks failed" >&2
+    exit 1
+  fi
+fi
+EOF
+
 }
 
 function install_docker_compose {
@@ -173,6 +237,12 @@ function install_docker_compose {
 }
 
 function install_buildkite {
+    count=$(dialog --inputbox "Number of BuildKite agents" 0 0 1 3>&1 1>&2 2>&3)
+    status=$?
+    if [ $status -ne 0 ]; then
+        exit $status
+    fi
+
     apk add shadow
     # cleanup old runs
     rm -rf /etc/buildkite-agent 2>&1 || true
@@ -203,7 +273,8 @@ function install_buildkite {
     ;;
     esac
 
-    cat <<'EOF' > /etc/init.d/buildkite-agent
+    for ((i=1; i<=$count; i++)); do
+        cat <<'EOF' > /etc/init.d/buildkite-agent-$i
 #!/sbin/openrc-run
 command="/usr/sbin/buildkite-agent"
 command_args="start"
@@ -215,9 +286,10 @@ depend() {
     provide buildkite-agent
 }
 EOF
+        chmod 0700 /etc/init.d/buildkite-agent-$i
+        rc-update add buildkite-agent-$i default
+    done
     sed -i "s/%hostname-%n/$(hostname)-%n/g" /etc/buildkite-agent/buildkite-agent.cfg
-    chmod 0700 /etc/init.d/buildkite-agent
-    rc-update add buildkite-agent default
     configure_net_online
     rc-update add net-online default
 
@@ -236,6 +308,13 @@ depend() {
 
 start() {
     cp /etc/buildkite-agent/buildkite-agent.cfg.template /etc/buildkite-agent/buildkite-agent.cfg
+
+    # fetch name
+    name=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
+    status=$?
+    if [ $status -eq 0 ]; then
+        echo name="$name-%n" >> /etc/buildkite-agent/buildkite-agent.cfg
+    fi
 
     # fetch token
     token=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-token" -H "Metadata-Flavor: Google")
@@ -271,6 +350,30 @@ END
         chown -hR buildkite:buildkite /home/buildkite/.ssh
         chmod -R 0700 /home/buildkite/.ssh
     fi
+
+    # fetch instance count
+    agent_count=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-agent-count" -H "Metadata-Flavor: Google")
+    status=$?
+    if [ $status -eq 0 ]; then
+        for i in $(seq 1 $agent_count); do
+            cat <<'END' > /etc/init.d/buildkite-agent-$i
+#!/sbin/openrc-run
+command="/usr/sbin/buildkite-agent"
+command_args="start"
+pidfile="/run/${RC_SVCNAME}.pid"
+command_background=true
+command_user=buildkite
+depend() {
+    after net network-online logger
+    provide buildkite-agent
+}
+END
+            chmod 0700 /etc/init.d/buildkite-agent-$i
+            rc-update add buildkite-agent-$i default
+            rc-service buildkite-agent-$i start
+        done
+    fi
+
 }
 EOF
     chmod 0700 /etc/init.d/buildkite-agent-settings
