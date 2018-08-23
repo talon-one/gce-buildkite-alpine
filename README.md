@@ -10,7 +10,7 @@ This repo contains everything you need use buildkite on GCE.
 # Creating an own image
 ```
 1. Boot alpine-virt-3.8.0-x86_64.iso in Virtualbox
-1.1. Make sure to select exactly 10gb fixed storage (.vdi)
+1.1. Make sure to select exactly 20gb fixed storage (.vdi)
 2. Login with Username root and no password
 3. run setup-alpine
 - set timezone to utc
@@ -45,4 +45,6 @@ This repo contains everything you need use buildkite on GCE.
 1.2 * Specify the count of buildkite agents using buildkite-agent-count
     * take name from google cloud as buildkite agent name
     * cronjobs to cleanup old docker files
+1.3 * fixed cronjobs permissions
+    * purge all not just networks and images
 ```

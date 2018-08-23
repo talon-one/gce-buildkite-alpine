@@ -176,9 +176,9 @@ DOCKER_PRUNE_UNTIL=${DOCKER_PRUNE_UNTIL:-4h}
 ## ------------------------------------------
 ## Prune stuff that doesn't affect cache hits
 
-docker network prune --force --filter "until=${DOCKER_PRUNE_UNTIL}"
-docker container prune --force --filter "until=${DOCKER_PRUNE_UNTIL}"
+docker system prune --force --filter "until=${DOCKER_PRUNE_UNTIL}"
 EOF
+    chmod 0700 /etc/periodic/hourly/docker-gc
 
     cat << 'EOF' > /usr/sbin/check-disk-space.sh
 #!/bin/bash
@@ -220,7 +220,7 @@ DOCKER_PRUNE_UNTIL=${DOCKER_PRUNE_UNTIL:-1h}
 
 if ! /usr/sbin/bk-check-disk-space.sh ; then
   echo "Cleaning up docker resources older than ${DOCKER_PRUNE_UNTIL}"
-  docker image prune --all --force --filter "until=${DOCKER_PRUNE_UNTIL}"
+  docker system prune --all --force --filter "until=${DOCKER_PRUNE_UNTIL}"
 
   if ! /usr/sbin/bk-check-disk-space.sh ; then
     echo "Disk health checks failed" >&2
@@ -228,6 +228,7 @@ if ! /usr/sbin/bk-check-disk-space.sh ; then
   fi
 fi
 EOF
+    chmod 0700 /etc/periodic/hourly/docker-low-disk-gc
 
 }
 
