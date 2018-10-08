@@ -28,7 +28,7 @@ This repo contains everything you need use buildkite on GCE.
 7. uncomment /community in /etc/apk/repositories
 8. download this repository (https://bit.ly/2y2XqBh / https://github.com/talon-one/gce-buildkite-alpine/archive/master.tar.gz) (use wget)
 9. extract `tar -xzv master.tar.gz` and run `install.sh`
-10. clear ash history and remove the script.sh (rm -rf ~/.ash_history script.sh)
+10. (clear ash history and remove the install files (rm -rf ~/.ash_history gce-buildkite-alpine))
 11. shutdown (halt)
 --- 
 12. Export the disk to the .raw file format
