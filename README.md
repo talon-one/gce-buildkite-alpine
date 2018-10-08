@@ -24,17 +24,18 @@ This repo contains everything you need use buildkite on GCE.
 6.1 add default_kernel_opts="... cgroup_enable=memory swapaccount=1"
 6.2 remove quiet, rhgb and splashimage= from default_kernel_opts
 6.3 set timeout to timeout=1
-6.1. Run update-extlinux
+6.1. Run `update-extlinux`
 7. uncomment /community in /etc/apk/repositories
-8. install bash (apk add bash) and download and run script.sh (use wget)
-9. clear ash history and remove the script.sh (rm -rf ~/.ash_history script.sh)
-10. shutdown (halt)
+8. download this repository (https://bit.ly/2y2XqBh / https://github.com/talon-one/gce-buildkite-alpine/archive/master.tar.gz) (use wget)
+9. extract `tar -xzv master.tar.gz` and run `install.sh`
+10. clear ash history and remove the script.sh (rm -rf ~/.ash_history script.sh)
+11. shutdown (halt)
 --- 
-11. Export the disk to the .raw file format
+12. Export the disk to the .raw file format
         VBoxManage clonehd filepath/to/disk.vdi disk.raw --format RAW
     or 
         VBoxManage internalcommands converttoraw filepath/to/disk.vdi  disk.raw
-12. Pack it to .tar.gz tar -Sczf disk.raw.tar.gz disk.raw
+13. Pack it to .tar.gz tar -Sczf disk.raw.tar.gz disk.raw
 ```
 
 # Changelog

@@ -1,0 +1,10 @@
+#!/sbin/openrc-run
+command="/usr/bin/google_network_daemon"
+command_args=""
+pidfile="/run/${RC_SVCNAME}.pid"
+command_background=true
+
+depend() {
+    after net network-online logger google-instance-setup
+    provide google-network-daemon
+}

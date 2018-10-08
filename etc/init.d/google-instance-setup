@@ -1,0 +1,10 @@
+#!/sbin/openrc-run
+depend() {
+    after net network-online logger
+    before sshd
+    provide google-instance-setup
+}
+
+start() {
+    /usr/bin/google_instance_setup
+}

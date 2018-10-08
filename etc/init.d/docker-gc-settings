@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+depend() {
+    after net network-online logger
+    provide docker-gc-settings
+}
+
+start() {
+    # fetch filter
+    filter=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/docker-gc-filter" -H "Metadata-Flavor: Google")
+    if [ $? -eq 0 ]; then
+        echo "export DOCKER_GC_FILTER=\"$filter\"" > /etc/docker/docker-gc-filter
+    fi
+}

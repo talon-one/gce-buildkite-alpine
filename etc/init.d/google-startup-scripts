@@ -1,0 +1,9 @@
+#!/sbin/openrc-run
+depend() {
+    after net network-online logger google-instance-setup google-network-daemon
+    provide google-startup-scripts
+}
+
+start() {
+    /usr/bin/google_metadata_script_runner --script-type startup
+}

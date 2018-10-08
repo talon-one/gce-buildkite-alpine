@@ -1,0 +1,4 @@
+virtio
+virtio_pci
+virtio_scsi
+virtio_net

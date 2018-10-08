@@ -1,0 +1,10 @@
+#!/sbin/openrc-run
+command="/usr/sbin/buildkite-agent"
+command_args="start"
+pidfile="/run/${RC_SVCNAME}.pid"
+command_background=true
+command_user=buildkite
+depend() {
+    after net network-online logger
+    provide buildkite-agent
+}

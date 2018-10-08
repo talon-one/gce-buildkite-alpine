@@ -1,0 +1,3 @@
+interfaces="eth0"
+include_ping_test="no"
+timeout="0"
