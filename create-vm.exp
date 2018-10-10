@@ -119,10 +119,10 @@ expect ":~#"
 send "export BUILDKITE_AGENTS=2\n"
 
 expect ":~#"
-send "cd gce-buildkite-alpine && ./install.sh && cd ~\n"
+send "cd gce-buildkite-alpine-master && ./install.sh && cd ~\n"
 
 expect ":~#"
-send "rm -rf gce-buildkite-alpine .ash_history && poweroff\n"
+send "rm -rf gce-buildkite-alpine-master .ash_history && poweroff\n"
 
 
 close
