@@ -14,7 +14,7 @@ sleep 1
 
 spawn qemu-system-x86_64 \
     -nographic \
-    -hda disk.raw \
+    -drive file=disk.raw,format=raw \
     -cdrom /home/tobias/Downloads/alpine-virt-3.8.0-x86_64.iso \
     -boot d
 
@@ -81,7 +81,7 @@ sleep 1
 
 spawn qemu-system-x86_64 \
     -nographic \
-    -hda disk.raw
+    -drive file=disk.raw,format=raw
 
 expect "login:"
 send "root\n"
