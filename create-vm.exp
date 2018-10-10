@@ -1,0 +1,130 @@
+#!/usr/bin/expect -f
+
+#starts guest vm, run benchmarks, poweroff
+set timeout -1
+
+#Assign a variable to the log file
+set log     [lindex $argv 0]
+
+#Start the guest VM
+
+spawn qemu-img create -f raw disk.raw 20G
+
+sleep 1
+
+spawn qemu-system-x86_64 \
+    -nographic \
+    -hda disk.raw \
+    -cdrom /home/tobias/Downloads/alpine-virt-3.8.0-x86_64.iso \
+    -boot d
+
+#Login process
+expect "localhost login:"
+#Enter username
+send "root\n"
+
+expect "localhost:~#"
+send "setup-alpine\n"
+
+expect "Select keyboard layout"
+send "none\n"
+
+expect "Enter system hostname"
+send "buildkite-agent\n"
+
+expect "Which one do you want to initialize?"
+send "\n"
+
+expect "Ip address for"
+send "dhcp\n"
+
+expect "Do you want to do any manual network configuration?"
+send "no\n"
+
+expect "New password"
+send "\n"
+
+expect "Retype password"
+send "\n"
+
+expect "Which timezone are you in?"
+send "UTC\n"
+
+expect "HTTP/FTP proxy URL?"
+send "none\n"
+
+expect "Enter mirror number"
+send "1\n"
+
+expect "Which SSH server?"
+send "openssh\n"
+
+#expect "Which NTP client to run?"
+#send "chrony\n"
+
+expect "Which disk(s) would you like to use?"
+send "sda\n"
+
+expect "How would you like to use it?"
+send "sys\n"
+
+expect "Erase the above disk(s) and continue?"
+send "y\n"
+
+expect "Installation is complete. Please reboot"
+send "poweroff\n"
+
+send_user "Rebooting..."
+sleep 3
+close
+sleep 1
+
+spawn qemu-system-x86_64 \
+    -nographic \
+    -hda disk.raw
+
+expect "login:"
+send "root\n"
+
+expect "Password:"
+send "\n"
+
+expect ":~#"
+send "echo default_kernel_opts=\"rootfstype=ext4 cgroup_enable=memory swapaccount=1\" >> /etc/update-extlinux.conf\n"
+
+expect ":~#"
+send "echo timeout=1 >> /etc/update-extlinux.conf\n"
+
+
+expect ":~#"
+send "update-extlinux\n"
+
+expect ":~#"
+send "echo http://dl-cdn.alpinelinux.org/alpine/v3.8/community >> /etc/apk/repositories\n"
+
+expect ":~#"
+send "wget https://github.com/talon-one/gce-buildkite-alpine/archive/master.tar.gz\n"
+
+expect ":~#"
+send "tar -xzvf master.tar.gz\n"
+
+expect ":~#"
+send "rm master.tar.gz\n"
+
+
+expect ":~#"
+send "export INSTALL_ITEMS=\"VirtioModules LinuxGuest Docker DockerCompose BuildKite\"\n"
+
+expect ":~#"
+send "export BUILDKITE_AGENTS=2\n"
+
+expect ":~#"
+send "cd gce-buildkite-alpine && ./install.sh && cd ~\n"
+
+expect ":~#"
+send "rm -rf gce-buildkite-alpine .ash_history && poweroff\n"
+
+
+close
+
+spawn "tar -Sczf disk.raw.tar.gz disk.raw"

@@ -8,6 +8,15 @@ This repo contains everything you need use buildkite on GCE.
 
 
 # Creating an own image
+
+Make sure you have installed qemu
+run create-vm.exp
+
+you will get a disk.raw.tar.gz image
+
+
+## Old way
+
 ```
 1. Boot alpine-virt-3.8.0-x86_64.iso in Virtualbox
 1.1. Make sure to select exactly 20gb fixed storage (.vdi)

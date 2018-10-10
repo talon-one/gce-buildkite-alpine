@@ -3,18 +3,18 @@
 set -e
 
 
-
-items=$(dialog --checklist "Choose which features you want to enable" 0 0 0 \
-    "VirtioModules" "enable additional virtualization modules" "on" \
-    "LinuxGuest" "install google linux guest environment " "on" \
-    "Docker" "install Docker" "off" \
-    "DockerCompose" "install DockerCompose" "off" \
-    "BuildKite" "install BuildKite-Agent (needs Docker and DockerCompose)" "off" \
-3>&1 1>&2 2>&3)
-
-status=$?
-if [ $status -ne 0 ]; then
-    exit $status
+if [ -z "$INSTALL_ITEMS" ]; then
+    INSTALL_ITEMS=$(dialog --checklist "Choose which features you want to enable" 0 0 0 \
+        "VirtioModules" "enable additional virtualization modules" "on" \
+        "LinuxGuest" "install google linux guest environment " "on" \
+        "Docker" "install Docker" "off" \
+        "DockerCompose" "install DockerCompose" "off" \
+        "BuildKite" "install BuildKite-Agent (needs Docker and DockerCompose)" "off" \
+    3>&1 1>&2 2>&3)
+    status=$?
+    if [ $status -ne 0 ]; then
+        exit $status
+    fi
 fi
 
 IFS=" "
@@ -74,7 +74,7 @@ function install_docker {
     rc-update add docker default
     rc-service docker start
 
-    case "${items[@]}" in *BuildKite*)
+    case "${INSTALL_ITEMS[@]}" in *BuildKite*)
         # if buildkite enabled, run docker containers as buildkite user
         mkdir /etc/docker 2>&1 || true
         cp ./etc/docker/daemon.json /etc/docker/daemon.json
@@ -100,10 +100,15 @@ function install_docker_compose {
 }
 
 function install_buildkite {
-    count=$(dialog --inputbox "Number of BuildKite agents" 0 0 1 3>&1 1>&2 2>&3)
-    status=$?
-    if [ $status -ne 0 ]; then
-        exit $status
+
+    echo BUILDKITE_AGENTS=$BUILDKITE_AGENTS
+
+    if [ -z "$BUILDKITE_AGENTS" ]; then
+        BUILDKITE_AGENTS=$(dialog --inputbox "Number of BuildKite agents" 0 0 1 3>&1 1>&2 2>&3)
+        status=$?
+        if [ $status -ne 0 ]; then
+            exit $status
+        fi
     fi
 
     apk add shadow
@@ -130,13 +135,13 @@ function install_buildkite {
     # add user
     useradd --create-home --shell /sbin/nologin --uid 100000 --gid 100000 buildkite
 
-    case "${items[@]}" in *Docker*)
+    case "${INSTALL_ITEMS[@]}" in *Docker*)
         # add user to docker group
         usermod --groups docker --append buildkite
     ;;
     esac
 
-    for ((i=1; i<=$count; i++)); do
+    for ((i=1; i<=$BUILDKITE_AGENTS; i++)); do
         cp ./etc/init.d/buildkite-agent /etc/init.d/buildkite-agent-$i
         chmod 0700 /etc/init.d/buildkite-agent-$i
         rc-update add buildkite-agent-$i default
@@ -145,7 +150,7 @@ function install_buildkite {
     configure_net_online
     rc-update add net-online default
 
-    case "${items[@]}" in *LinuxGuest*)
+    case "${INSTALL_ITEMS[@]}" in *LinuxGuest*)
         # if google is enabled
 
         # use the config as template
@@ -164,7 +169,7 @@ function install_buildkite {
 
 
 
-for task in $items
+for task in $INSTALL_ITEMS
 do
 case "$task" in
     VirtioModules)
@@ -189,7 +194,7 @@ done
 
 echo "================================================================================"
 echo "Everything done, Summary:"
-for task in $items
+for task in $INSTALL_ITEMS
 do
 case "$task" in
     VirtioModules)

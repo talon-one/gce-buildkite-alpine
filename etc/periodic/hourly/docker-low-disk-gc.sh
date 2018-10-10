@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-source /etc/docker/docker-gc-filter
+
 
 DOCKER_PRUNE_UNTIL=${DOCKER_PRUNE_UNTIL:-1h}
 ## -----------------------------------------------------------------
@@ -10,11 +10,18 @@ DOCKER_PRUNE_UNTIL=${DOCKER_PRUNE_UNTIL:-1h}
 if ! /usr/sbin/bk-check-disk-space.sh ; then
   echo "Cleaning up docker resources older than ${DOCKER_PRUNE_UNTIL}"
 
-  if [ -z "$DOCKER_GC_FILTER" ]; then
-    DOCKER_GC_FILTER=--filter "${DOCKER_GC_FILTER}"
+  source /etc/docker/docker-gc-filter
+
+  if [ -n "$DOCKER_GC_FILTER" ]; then
+      FILTER=""
+      IFS=';' read -ra ADDR <<< "$DOCKER_GC_FILTER"
+      for i in "${ADDR[@]}"; do
+    echo $i
+          FILTER="$FILTER --filter $i"
+      done
   fi
 
-  docker system prune --all --force --filter "until=${DOCKER_PRUNE_UNTIL}" ${DOCKER_GC_FILTER}
+  docker system prune --all --force --filter "until=${DOCKER_PRUNE_UNTIL}" $FILTER
 
   if ! /usr/sbin/bk-check-disk-space.sh ; then
     echo "Disk health checks failed" >&2
