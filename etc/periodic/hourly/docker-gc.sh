@@ -1,20 +1,26 @@
 #!/bin/bash
 set -euo pipefail
 
-source /etc/docker/docker-gc-filter
+docker-purge --containers '.Created+60*60<now'
 
-DOCKER_PRUNE_UNTIL=${DOCKER_PRUNE_UNTIL:-4h}
+filter=$(cat <<EOF
+.Created+60*60<now
+and (
+        (
+                (.RepoTags | contains(["clkao/postgres"]))
+            or
+                (.RepoTags | contains(["talon-one/docker-go-node"]))
+            or
+                (.RepoTags | contains(["alpine:latest"]))
+            or
+                (.RepoTags | contains(["selenium/standalone-firefox"]))
+            or
+                (.RepoTags | contains(["selenium/standalone-chrome"]))
+            or
+                (.RepoDigests | contains(["eu.gcr.io/talon-farm2/talon-one/e2e-runner"]))
+        ) | not
+    )
+EOF
+)
 
-## ------------------------------------------
-## Prune stuff that doesn't affect cache hits
-
-if [ -n "$DOCKER_GC_FILTER" ]; then
-    FILTER=""
-    IFS=';' read -ra ADDR <<< "$DOCKER_GC_FILTER"
-    for i in "${ADDR[@]}"; do
-	echo $i
-        FILTER="$FILTER --filter $i"
-    done
-fi
-
-docker system prune --force --filter "until=${DOCKER_PRUNE_UNTIL}" ${FILTER}
+docker-purge --images $filter

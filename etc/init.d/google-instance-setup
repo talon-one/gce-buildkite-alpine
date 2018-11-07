@@ -6,5 +6,5 @@ depend() {
 }
 
 start() {
-    /usr/bin/google_instance_setup
+    /usr/bin/google_instance_setup --debug
 }

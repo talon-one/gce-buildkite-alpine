@@ -1,10 +1,66 @@
 #!/sbin/openrc-run
-command="/usr/sbin/buildkite-agent"
-command_args="start"
-pidfile="/run/${RC_SVCNAME}.pid"
-command_background=true
 command_user=buildkite
 depend() {
-    after net network-online logger
+    after net network-online logger docker docker-login
     provide buildkite-agent
+}
+
+start() {
+    arguments="--build-path /home/buildkite/"
+    # fetch name
+    name=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
+    status=$?
+    if [ $status -ne 0 ]; then
+        name=$(hostname)
+    fi
+    arguments="$arguments --name $name"
+
+    # fetch token
+    token=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-token" -H "Metadata-Flavor: Google")
+    status=$?
+    if [ $status -ne 0 ]; then
+        echo "Unable to get buildkite-token"
+        exit $status
+    fi
+    arguments="$arguments --token $token"
+
+    # fetch priority
+    priority=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-priority" -H "Metadata-Flavor: Google")
+    if [ $? -eq 0 ]; then
+        arguments="$arguments --priority $priority"
+    fi
+
+    # fetch tags
+    tags=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-tags" -H "Metadata-Flavor: Google")
+    if [ $? -eq 0 ]; then
+        arguments="$arguments --tags $tags"
+    fi
+
+    # fetch sshkey
+    key=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-sshkey" -H "Metadata-Flavor: Google")
+    status=$?
+    if [ $status -eq 0 ]; then
+        mkdir /hom  e/buildkite/.ssh 2>&1 || true
+        echo $key | base64 --decode > /home/buildkite/.ssh/identity
+        cat <<'END' > /home/buildkite/.ssh/config
+    Host *
+        IdentityFile /home/buildkite/.ssh/identity
+END
+        chown -hR buildkite:buildkite /home/buildkite/.ssh
+        chmod -R 0700 /home/buildkite/.ssh
+    fi
+
+    # fetch instance count
+    agent_count=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-agent-count" -H "Metadata-Flavor: Google")
+    status=$?
+    if [ $status -ne 0 ]; then
+        agent_count=1
+    fi
+    for i in $(seq 1 $agent_count); do
+        nohup /usr/sbin/buildkite-agent start $arguments &> /var/log/buildkite.$i.log &
+    done
+}
+
+stop () {
+    killall -9 buildkite-agent &> /dev/null
 }

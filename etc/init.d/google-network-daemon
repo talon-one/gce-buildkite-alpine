@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 command="/usr/bin/google_network_daemon"
-command_args=""
+command_args="--debug"
 pidfile="/run/${RC_SVCNAME}.pid"
 command_background=true
 

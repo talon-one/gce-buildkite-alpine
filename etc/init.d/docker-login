@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+command_user=buildkite
+depend() {
+    after net network-online logger docker
+    provide docker-login
+}
+
+start() {
+    while [ ! -f /var/run/docker.sock ]
+    do
+        sleep 2
+    done
+    curl --output /tmp/docker-login --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/docker-json-key" -H "Metadata-Flavor: Google"
+    status=$?
+    if [ $status -eq 0 ]; then
+        sudo --user buildkite docker login --username _json_key --password "$(cat /tmp/docker-login | base64 -d)" https://eu.gcr.io
+    fi
+    rm -rf /tmp/docker-login
+}

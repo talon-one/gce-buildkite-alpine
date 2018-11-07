@@ -1,2 +1,4 @@
 disk.raw
 disk.raw.tar.gz
+gce-buildkite-alpine.iso
+alpine-virt-3.8.0-x86_64.iso

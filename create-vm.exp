@@ -1,24 +1,46 @@
 #!/usr/bin/expect -f
 
-#starts guest vm, run benchmarks, poweroff
 set timeout -1
 
-#Assign a variable to the log file
-set log     [lindex $argv 0]
 
-#Start the guest VM
+file delete disk.raw
+file delete disk.raw.tar.gz
+file delete gce-buildkite-alpine.iso
+
+# Create a iso with this repository
+spawn mkisofs -rock -output gce-buildkite-alpine.iso .
+lassign [wait] pid spawnid os_error_flag value
+if {$os_error_flag == -1 || $value != 0} {
+    send_user "Failed to create fat32 disk"
+    exit 1
+}
+close
+
+if {! [file exists gce-buildkite-alpine.iso]} {
+    send_user "Failed to create fat32 disk"
+    exit 1
+}
+
+# Start the guest VM
 
 spawn qemu-img create -f raw disk.raw 20G
+lassign [wait] pid spawnid os_error_flag value
 
-sleep 1
+if {$os_error_flag == -1 || $value != 0} {
+    send_user "Failed to create raw disk"
+    exit 1
+}
+close
+
 
 spawn qemu-system-x86_64 \
     -nographic \
     -drive file=disk.raw,format=raw \
-    -cdrom /home/tobias/Downloads/alpine-virt-3.8.0-x86_64.iso \
+    -serial mon:stdio \
+    -cdrom alpine-virt-3.8.0-x86_64.iso \
     -boot d
 
-#Login process
+# Login process
 expect "localhost login:"
 #Enter username
 send "root\n"
@@ -74,23 +96,31 @@ send "y\n"
 expect "Installation is complete. Please reboot"
 send "poweroff\n"
 
-send_user "Rebooting..."
+send_user "\nRebooting...\n"
 sleep 3
 close
 sleep 1
 
 spawn qemu-system-x86_64 \
     -nographic \
-    -drive file=disk.raw,format=raw
+    -serial mon:stdio \
+    -drive file=disk.raw,format=raw \
+    -cdrom gce-buildkite-alpine.iso \
+    -boot c
 
 expect "login:"
 send "root\n"
+
 
 expect "Password:"
 send "\n"
 
 expect ":~#"
-send "echo default_kernel_opts=\"rootfstype=ext4 cgroup_enable=memory swapaccount=1\" >> /etc/update-extlinux.conf\n"
+send "echo default_kernel_opts=\\\"rootfstype=ext4 console=ttyS0,115200 cgroup_enable=memory swapaccount=1\\\" >> /etc/update-extlinux.conf\n"
+expect ":~#"
+send "echo serial_port=0 >> /etc/update-extlinux.conf\n"
+expect ":~#"
+send "echo serial_baud=115200 >> /etc/update-extlinux.conf\n"
 
 expect ":~#"
 send "echo timeout=1 >> /etc/update-extlinux.conf\n"
@@ -103,28 +133,42 @@ expect ":~#"
 send "echo http://dl-cdn.alpinelinux.org/alpine/v3.8/community >> /etc/apk/repositories\n"
 
 expect ":~#"
-send "wget https://github.com/talon-one/gce-buildkite-alpine/archive/master.tar.gz\n"
+send "mount -t iso9660 /dev/cdrom /media/cdrom\n"
 
 expect ":~#"
-send "tar -xzvf master.tar.gz\n"
+send "/media/cdrom/install.sh\n"
+
+
+
+expect {
+  "Installation succeeded" {
+  }
+  "Installation failed" {
+      exit 1
+  }
+}
+
 
 expect ":~#"
-send "rm master.tar.gz\n"
 
-
-expect ":~#"
-send "export INSTALL_ITEMS=\"VirtioModules LinuxGuest Docker DockerCompose BuildKite\"\n"
+send "umount /media/cdrom && rm .ash_history && poweroff\n"
 
 expect ":~#"
-send "export BUILDKITE_AGENTS=2\n"
-
-expect ":~#"
-send "cd gce-buildkite-alpine-master && ./install.sh && cd ~\n"
-
-expect ":~#"
-send "rm -rf gce-buildkite-alpine-master .ash_history && poweroff\n"
 
 
 close
+sleep 1
 
-spawn "tar -Sczf disk.raw.tar.gz disk.raw"
+send_user "Packing disk\n"
+
+spawn tar -Sczf disk.raw.tar.gz disk.raw
+lassign [wait] pid spawnid os_error_flag value
+if {$os_error_flag == -1 || $value != 0} {
+    send_user "Failed to pack disk"
+    exit 1
+}
+close
+
+send_user "Finished!\n"
+
+exit

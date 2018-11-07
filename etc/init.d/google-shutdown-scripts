@@ -5,5 +5,5 @@ depend() {
 }
 
 start() {
-    /usr/bin/google_metadata_script_runner --script-type shutdown
+    /usr/bin/google_metadata_script_runner --debug --script-type shutdown
 }

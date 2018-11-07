@@ -1,50 +1,33 @@
 # Buildkite for GCE
 This repo contains everything you need use buildkite on GCE.
 
-1. Download the disk.raw.tar.gz and upload it to a google bucket
-2. Create an image
-3. Create an instance and specify the `buildkite-token` and `buildkite-sshkey` (base64 encoded, private key) as metadata
+
+## Use docker to build the image
+1. Make sure you download and place `alpine-virt-3.8.0-x86_64.iso` in this folder
+2. Run `docker run --rm --volume $(pwd):/build justincormack/alpine-qemu /build/docker-entrypoint.sh` in this folder
+3. Get a cup of coffee
+4. disk.raw.tar.gz should be created
 
 
+## Without docker
+1. Make sure you download and place `alpine-virt-3.8.0-x86_64.iso` in this folder
+2. Make sure you have installed expect qemu and mkisofs
+3. run create-vm.exp
+4. Get a cup of coffee
+5. disk.raw.tar.gz should be created
 
-# Creating an own image
-
-Make sure you have installed qemu
-run create-vm.exp
-
-you will get a disk.raw.tar.gz image
+Then upload disk.raw.tar.gz to your google bucket (and import it to gce afterwards)
 
 
-## Old way
+Available google cloud settings:
 
 ```
-1. Boot alpine-virt-3.8.0-x86_64.iso in Virtualbox
-1.1. Make sure to select exactly 20gb fixed storage (.vdi)
-2. Login with Username root and no password
-3. run setup-alpine
-- set timezone to utc
-- do not setup a root password
-- install on the drive
-- make sure to select "sys" when asked how to store data
-4. Eject iso
-5. Boot from HDD
----
-6. in /etc/update-extlinux.conf
-6.1 add default_kernel_opts="... cgroup_enable=memory swapaccount=1"
-6.2 remove quiet, rhgb and splashimage= from default_kernel_opts
-6.3 set timeout to timeout=1
-6.1. Run `update-extlinux`
-7. uncomment /community in /etc/apk/repositories
-8. download this repository (https://bit.ly/2y2XqBh / https://github.com/talon-one/gce-buildkite-alpine/archive/master.tar.gz) (use wget)
-9. extract `tar -xzv master.tar.gz` and run `install.sh`
-10. (clear ash history and remove the install files (rm -rf ~/.ash_history gce-buildkite-alpine))
-11. shutdown (halt)
---- 
-12. Export the disk to the .raw file format
-        VBoxManage clonehd filepath/to/disk.vdi disk.raw --format RAW
-    or 
-        VBoxManage internalcommands converttoraw filepath/to/disk.vdi  disk.raw
-13. Pack it to .tar.gz tar -Sczf disk.raw.tar.gz disk.raw
+buildkite-token       | token to use for buildkite
+buildkite-sshkey      | ssh private key to use (base64 encoded)
+buildkite-tags        | tags for the buildkite agents
+buildkite-priority    | priority to use
+buildkite-agent-count | agents to use in this image
+docker-json-key       | json key for docker (base64 encoded)
 ```
 
 # Changelog
