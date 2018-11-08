@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo su -s /bin/bash --login buildkite

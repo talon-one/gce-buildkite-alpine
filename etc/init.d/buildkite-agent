@@ -40,7 +40,7 @@ start() {
     key=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-sshkey" -H "Metadata-Flavor: Google")
     status=$?
     if [ $status -eq 0 ]; then
-        mkdir /hom  e/buildkite/.ssh 2>&1 || true
+        mkdir /home/buildkite/.ssh 2>&1 || true
         echo $key | base64 --decode > /home/buildkite/.ssh/identity
         cat <<'END' > /home/buildkite/.ssh/config
     Host *

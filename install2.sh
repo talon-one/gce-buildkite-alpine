@@ -128,7 +128,27 @@ sleep 1
 usermod --groups docker --append buildkite
 sleep 1
 
-
 cp $SCRIPTPATH/etc/init.d/buildkite-agent /etc/init.d/buildkite-agent
 chmod 0700 /etc/init.d/buildkite-agent
 rc-update add buildkite-agent default
+
+
+# update /etc/profile
+echo "export PS1='\u@\h:\`pwd\`\$ '" >> /etc/profile
+
+cp $SCRIPTPATH/usr/sbin/iamroot /usr/sbin/iamroot
+chmod 0755 /usr/sbin/iamroot
+cp $SCRIPTPATH/usr/sbin/iambuildkite /usr/sbin/iambuildkite
+chmod 0755 /usr/sbin/iambuildkite
+
+# update /etc/motd
+
+printf "\e[1m\e[7m" > /etc/motd
+printf "                                           \n" >> /etc/motd
+printf "  Welcome to buildkite-agent               \n" >> /etc/motd
+printf "                                           \n" >> /etc/motd
+printf "  Commands                                 \n" >> /etc/motd
+printf "    iamroot         | switch to root       \n" >> /etc/motd
+printf "    iambuildkite    | switch to buildkite  \n" >> /etc/motd
+printf "                                           \n" >> /etc/motd
+printf "\e[0m\n" >> /etc/motd

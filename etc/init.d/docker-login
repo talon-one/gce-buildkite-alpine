@@ -6,8 +6,9 @@ depend() {
 }
 
 start() {
-    while [ ! -f /var/run/docker.sock ]
+    while [ ! -S /var/run/docker.sock ]
     do
+        echo "Waiting for docker to start..."
         sleep 2
     done
     curl --output /tmp/docker-login --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/docker-json-key" -H "Metadata-Flavor: Google"
