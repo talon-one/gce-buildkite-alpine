@@ -1,19 +1,18 @@
 #!/sbin/openrc-run
-command_user=buildkite
 depend() {
     after net network-online logger docker docker-login
     provide buildkite-agent
 }
 
 start() {
-    arguments="--build-path /home/buildkite/"
+    arguments="--build-path /home/buildkite/builds --plugins-path /home/buildkite/plugins --hooks-path=/home/buildkite/hooks"
     # fetch name
     name=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
     status=$?
     if [ $status -ne 0 ]; then
         name=$(hostname)
     fi
-    arguments="$arguments --name $name"
+    arguments="$arguments --name $name-%n"
 
     # fetch token
     token=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-token" -H "Metadata-Flavor: Google")
@@ -57,7 +56,7 @@ END
         agent_count=1
     fi
     for i in $(seq 1 $agent_count); do
-        nohup /usr/sbin/buildkite-agent start $arguments &> /var/log/buildkite.$i.log &
+        nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments &> /var/log/buildkite.$i.log &
     done
 }
 

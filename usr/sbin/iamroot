@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo su
+sudo su --login
