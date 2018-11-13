@@ -23,4 +23,4 @@ and (
 EOF
 )
 
-docker-purge --images $filter
+docker-purge --images "$filter"
