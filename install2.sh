@@ -81,8 +81,8 @@ cp $SCRIPTPATH/etc/subgid /etc/subgid
 
 
 # install garbage collection cronjobs
-cp $SCRIPTPATH/etc/periodic/hourly/docker-gc.sh /etc/periodic/hourly/docker-gc.sh
-chmod 0700 /etc/periodic/hourly/docker-gc.sh
+cp $SCRIPTPATH/etc/periodic/hourly/docker-gc /etc/periodic/hourly/docker-gc
+chmod 0700 /etc/periodic/hourly/docker-gc
 cp $SCRIPTPATH/usr/sbin/docker-purge /usr/sbin/docker-purge
 
 # install docker-login
