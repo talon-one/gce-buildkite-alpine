@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-docker-purge --containers '.Created+60*60<now'
+docker-purge --force --all --containers '.Created+60*60<now'
 
 filter=$(cat <<EOF
 .Created+60*60<now
@@ -23,4 +23,8 @@ and (
 EOF
 )
 
-docker-purge --images "$filter"
+docker-purge --force --all --images "$filter"
+
+docker-purge --force --all --networks '.Created+60*60<now'
+
+logger -t docker-gc Cleaned Containers, Images and Networks
