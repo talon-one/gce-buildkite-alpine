@@ -1,0 +1,7 @@
+steps:
+  - label: ":building_construction: Building Image"
+    artifact_paths: ./*.tar.gz
+    plugins:
+      docker-compose#v2.5.1:
+        config: docker-compose.buildkite.yml
+        run: build-image

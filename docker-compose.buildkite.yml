@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  build-image:
+    image: justincormack/alpine-qemu:latest
+    command: "/build/docker-entrypoint.sh"
+    volumes:
+      - ./:/build
