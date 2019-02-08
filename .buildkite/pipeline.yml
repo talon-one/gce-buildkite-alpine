@@ -7,5 +7,5 @@ steps:
         run: build-image
     retry:
       automatic:
-        - exit_status: *
+        - exit_status: "*"
           limit: 10
