@@ -101,6 +101,9 @@ sleep 3
 close
 sleep 1
 
+spawn pwd
+spawn ls -la
+
 spawn qemu-system-x86_64 \
     -nographic \
     -serial mon:stdio \
