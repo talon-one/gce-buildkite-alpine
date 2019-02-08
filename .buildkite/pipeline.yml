@@ -5,7 +5,7 @@ steps:
     artifact_paths: ./*.tar.gz
     plugins:
       docker-compose#v2.5.1:
-        config: .buildkite/docker-compose.buildkite.yml
+        config: .buildkite/docker-compose.yml
         run: build-image
     retry:
       automatic:
