@@ -25,9 +25,10 @@ start() {
 
     # fetch priority
     priority=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-priority" -H "Metadata-Flavor: Google")
-    if [ $? -eq 0 ]; then
-        arguments="$arguments --priority $priority"
+    if [ $? -ne 0 ]; then
+        priority=$(date --utc +"%Y%m%d%H%m%S")
     fi
+    arguments="$arguments --priority $priority"
 
     # fetch tags
     tags=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-tags" -H "Metadata-Flavor: Google")
@@ -55,11 +56,14 @@ END
     if [ $status -ne 0 ]; then
         agent_count=1
     fi
+
     for i in $(seq 1 $agent_count); do
         nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments &> /var/log/buildkite.$i.log &
     done
 }
 
 stop () {
+    killall -15 buildkite-agent &> /dev/null
+    sleep 3
     killall -9 buildkite-agent &> /dev/null
 }

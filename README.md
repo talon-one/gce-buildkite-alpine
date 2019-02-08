@@ -25,7 +25,7 @@ Available google cloud settings:
 buildkite-token        | token to use for buildkite
 buildkite-sshkey       | ssh private key to use (base64 encoded)
 buildkite-tags         | tags for the buildkite agents
-buildkite-priority     | priority to use
+buildkite-priority     | priority to use (if not specified use current timestamp)
 buildkite-agent-count  | agents to use in this image
 docker-credential-file | json credential file for docker (base64 encoded)
 ```

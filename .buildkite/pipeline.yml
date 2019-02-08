@@ -16,10 +16,10 @@ steps:
   - wait
 
   - label: ":arrow_up: creating image"
+    command: /app/.buildkite/create-image.sh
     concurrency: 1
     concurrency_group: "gce-buildkite-alpine/1"
     plugins:
       docker-compose#v2.5.1:
         config: .buildkite/docker-compose.yml
         run: cloud-sdk
-        command: ["/app/.buildkite/create-image.sh"]
