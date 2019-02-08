@@ -5,3 +5,7 @@ steps:
       docker-compose#v2.5.1:
         config: docker-compose.buildkite.yml
         run: build-image
+    retry:
+      automatic:
+        - exit_status: *
+          limit: 10
