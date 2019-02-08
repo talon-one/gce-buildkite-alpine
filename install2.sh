@@ -85,10 +85,10 @@ cp $SCRIPTPATH/etc/periodic/hourly/docker-gc /etc/periodic/hourly/docker-gc
 chmod 0700 /etc/periodic/hourly/docker-gc
 cp $SCRIPTPATH/usr/sbin/docker-purge /usr/sbin/docker-purge
 
-# install docker-login
-cp $SCRIPTPATH/etc/init.d/docker-login /etc/init.d/docker-login
-chmod 0700 /etc/init.d/docker-login
-rc-update add docker-login default
+# install docker-credential-file
+cp $SCRIPTPATH/etc/init.d/docker-credential-file /etc/init.d/docker-credential-file
+chmod 0700 /etc/init.d/docker-credential-file
+rc-update add docker-credential-file default
 
 # install docker compose
 printf "\e[7mInstalling Docker Compose\e[0m\n"

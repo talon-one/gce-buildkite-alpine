@@ -22,12 +22,12 @@ Then upload disk.raw.tar.gz to your google bucket (and import it to gce afterwar
 Available google cloud settings:
 
 ```
-buildkite-token       | token to use for buildkite
-buildkite-sshkey      | ssh private key to use (base64 encoded)
-buildkite-tags        | tags for the buildkite agents
-buildkite-priority    | priority to use
-buildkite-agent-count | agents to use in this image
-docker-json-key       | json key for docker (base64 encoded)
+buildkite-token        | token to use for buildkite
+buildkite-sshkey       | ssh private key to use (base64 encoded)
+buildkite-tags         | tags for the buildkite agents
+buildkite-priority     | priority to use
+buildkite-agent-count  | agents to use in this image
+docker-credential-file | json credential file for docker (base64 encoded)
 ```
 
 # Changelog

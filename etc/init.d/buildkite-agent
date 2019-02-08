@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 depend() {
-    after net network-online logger docker docker-login
+    after net network-online logger docker docker-credential-file
     provide buildkite-agent
 }
 

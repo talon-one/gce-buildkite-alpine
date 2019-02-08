@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  build-image:
+    image: justincormack/alpine-qemu:latest
+    command: "/build/docker-entrypoint.sh"
+    volumes:
+      - ./:/build
+
+  cloud-sdk:
+    image: google/cloud-sdk:latest
+    environment:
+        - CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=/tmp/gcloud-credential-file
+        - BUCKET
+        - PROJECT
+        - BUILDKITE_PIPELINE_SLUG
+        - BUILDKITE_BRANCH
+        - BUILDKITE_BUILD_ID
+    volumes:
+      - /tmp/docker-credential-file:/tmp/gcloud-credential-file
+      - ./:/app/

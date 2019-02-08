@@ -1,5 +1,7 @@
 steps:
   - label: ":building_construction: Building Image"
+    concurrency: 1
+    concurrency_group: "gce-buildkite-alpine/1"
     artifact_paths: ./*.tar.gz
     plugins:
       docker-compose#v2.5.1:
@@ -9,3 +11,15 @@ steps:
       automatic:
         - exit_status: "*"
           limit: 10
+
+
+#  - wait
+#
+#  - label: ":arrow_up: creating image"
+#    concurrency: 1
+#    concurrency_group: "gce-buildkite-alpine/1"
+#    plugins:
+#      docker-compose#v2.5.1:
+#        config: .buildkite/docker-compose.yml
+#        run: cloud-sdk
+#        command: ["/app/.buildkite/create-image.sh"]
