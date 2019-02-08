@@ -5,7 +5,7 @@ services:
     image: justincormack/alpine-qemu:latest
     command: "/build/docker-entrypoint.sh"
     volumes:
-      - ./:/build
+      - ../:/build
 
   cloud-sdk:
     image: google/cloud-sdk:latest
@@ -18,4 +18,4 @@ services:
         - BUILDKITE_BUILD_ID
     volumes:
       - /tmp/docker-credential-file:/tmp/gcloud-credential-file
-      - ./:/app/
+      - ../:/app/
