@@ -1,8 +1,13 @@
 version: '3'
 
 services:
-  build-image:
-    image: justincormack/alpine-qemu:latest
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+      args:
+        BRANCH: ${BUILDKITE_BRANCH}
+        COMMIT: ${BUILDKITE_COMMIT}
     command: "/build/docker-entrypoint.sh"
     volumes:
       - ../:/build

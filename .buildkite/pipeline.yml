@@ -6,7 +6,7 @@ steps:
     plugins:
       docker-compose#v2.5.1:
         config: .buildkite/docker-compose.yml
-        run: build-image
+        run: builder
     retry:
       automatic:
         - exit_status: "*"
