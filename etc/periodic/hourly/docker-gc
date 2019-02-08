@@ -5,7 +5,11 @@ set -e
 
 filter=$(cat <<EOF
 .Created+60*60<now
-and (.RepoTags | contains(["buildkite"]))
+and (
+        (.RepoTags | contains(["buildkite"]))
+        or
+        (.RepoTags | contains(["none"]))
+)
 EOF
 )
 
