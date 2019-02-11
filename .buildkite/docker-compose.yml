@@ -15,12 +15,16 @@ services:
   cloud-sdk:
     image: google/cloud-sdk:latest
     environment:
-        - CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=/tmp/gcloud-credential-file
+        - GCLOUD_CREDENTIAL_FILE=/tmp/gcloud-credential-file
         - BUCKET
         - PROJECT
+        - BUILDKITE_AGENT_ACCESS_TOKEN
         - BUILDKITE_PIPELINE_SLUG
         - BUILDKITE_BRANCH
         - BUILDKITE_BUILD_ID
+    working_dir: "/app"
+    command: "/app/.buildkite/create-image.sh"
     volumes:
       - /tmp/docker-credential-file:/tmp/gcloud-credential-file
       - ../:/app/
+      - /usr/sbin/buildkite-agent:/usr/bin/buildkite-agent
