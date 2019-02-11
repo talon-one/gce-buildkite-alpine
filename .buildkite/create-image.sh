@@ -1,11 +1,12 @@
 #!/bin/bash
 set -e
+set -x
 
-buildkite-agent artifact download disk.raw.tar.gz /tmp/
+buildkite-agent artifact download disk.raw.tar.gz .
 
 BUCKET_PATH="${BUCKET}/${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BRANCH}${BUILDKITE_BUILD_ID}.tar.gz"
 
-gsutil cp /tmp/disk.raw.tar.gz gs://$BUCKET_PATH
+gsutil cp disk.raw.tar.gz gs://$BUCKET_PATH
 gcloud compute --project={$PROJECT} \
     images create buildkite-agent-3-5-1-$(date +"%F-%H-%m-%S") \
     --family=alpine \
