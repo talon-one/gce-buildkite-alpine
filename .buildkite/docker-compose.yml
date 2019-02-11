@@ -21,6 +21,8 @@ services:
         - BUILDKITE_PIPELINE_SLUG
         - BUILDKITE_BRANCH
         - BUILDKITE_BUILD_ID
+    working_dir: "/app"
+    command: "/app/.buildkite/create-image.sh"
     volumes:
       - /tmp/docker-credential-file:/tmp/gcloud-credential-file
       - ../:/app/

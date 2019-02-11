@@ -16,7 +16,6 @@ steps:
   - wait
 
   - label: ":arrow_up: creating image"
-    command: /app/.buildkite/create-image.sh
     concurrency: 1
     concurrency_group: "gce-buildkite-alpine/1"
     plugins:
