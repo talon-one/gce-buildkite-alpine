@@ -1,9 +1,13 @@
 #!/sbin/openrc-run
 depend() {
-    before net network-online logger google-instance-setup google-network-daemon
+    after net network-online logger google-instance-setup google-network-daemon
     provide google-shutdown-scripts
 }
 
 start() {
+    exit 0
+}
+
+stop() {
     /usr/bin/google_metadata_script_runner --debug --script-type shutdown
 }
