@@ -60,6 +60,9 @@ END
     for i in $(seq 1 $agent_count); do
         nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments &> /var/log/buildkite.$i.log &
     done
+
+    # start nginx (for health)
+    /etc/init.d/nginx start
 }
 
 stop () {
