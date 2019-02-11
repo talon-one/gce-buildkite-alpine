@@ -68,7 +68,16 @@ END
 
 stop () {
     kill -15 $(cat /var/run/buildkite.*.pid)
-    sleep 3
+
+    for i in {1..120}
+    do
+        kill -0 $(cat /var/run/buildkite.*.pid) &> /dev/null
+        if [ $status -eq 0 ]; then
+            break
+        fi
+        echo "Waiting for the process to finish"
+        sleep 1
+    done
     kill -9 $(cat /var/run/buildkite.*.pid)
     rm /var/run/buildkite.*.pid
     /etc/init.d/nginx stop
