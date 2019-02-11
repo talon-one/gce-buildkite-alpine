@@ -6,7 +6,9 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Tweak open rc
 printf "\e[7mTweaking open rc\e[0m\n"
-echo "rc_interactive=\"YES\"" >> /etc/rc.conf
+# set this if you want to break the boot process
+# notice that this always breaks the shutdown process!
+# echo "rc_interactive=\"YES\"" >> /etc/rc.conf 
 echo "rc_shell=\"/bin/sh\"" >> /etc/rc.conf
 echo "rc_verbose=yes" >> /etc/rc.conf
 
@@ -63,7 +65,7 @@ rc-update add google-startup-scripts default
 
 cp $SCRIPTPATH/etc/init.d/google-shutdown-scripts /etc/init.d/google-shutdown-scripts
 chmod 0700 /etc/init.d/google-shutdown-scripts
-rc-update add google-shutdown-scripts shutdown
+rc-update add google-shutdown-scripts default
 
 
 # install docker

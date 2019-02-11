@@ -25,7 +25,6 @@ services:
         - BUILDKITE_COMMIT
         - BUILDKITE_BUILD_URL
         - BUILDKITE_REPO
-        - INSTANCE_GROUP
     working_dir: "/app"
     volumes:
       - /tmp/docker-credential-file:/tmp/gcloud-credential-file

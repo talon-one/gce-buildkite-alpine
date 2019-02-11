@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+INSTANCE_GROUP=$(buildkite-agent meta-data get instance-group)
+
 buildkite-agent artifact download disk.raw.tar.gz .
 
 gcloud auth activate-service-account --key-file=$GCLOUD_CREDENTIAL_FILE

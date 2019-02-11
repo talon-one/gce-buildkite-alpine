@@ -25,6 +25,12 @@ steps:
 
   - block: "Deploy :rocket:"
     prompt: "Release image and restart buildkite agents?"
+    fields:
+      - text: "Instance Group"
+        key: "instance-group"
+        hint: "The google compute instance group to restart"
+        required: false
+        default: "$INSTANCE_GROUP"
 
   - label: ":rocket:"
     command: "/app/.buildkite/release-image.sh"
