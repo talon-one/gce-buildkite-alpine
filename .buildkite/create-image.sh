@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+pwd
+ls -la
+
 BUCKET_PATH="${BUCKET}/${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BRANCH}${BUILDKITE_BUILD_ID}.tar.gz"
 
 gsutil cp disk.raw.tar.gz gs://$BUCKET_PATH
