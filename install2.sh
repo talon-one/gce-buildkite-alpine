@@ -155,3 +155,10 @@ printf "    iamroot         | switch to root       \n" >> /etc/motd
 printf "    iambuildkite    | switch to buildkite  \n" >> /etc/motd
 printf "                                           \n" >> /etc/motd
 printf "\e[0m\n" >> /etc/motd
+
+
+# install nginx to have a health check available
+printf "\e[7mInstalling nginx\e[0m\n"
+
+apk add nginx
+cp $SCRIPTPATH/etc/nginx/nginx.conf /etc/nginx/nginx.conf
