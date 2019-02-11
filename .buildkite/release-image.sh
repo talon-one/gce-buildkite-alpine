@@ -17,7 +17,7 @@ BUCKET_PATH="${BUCKET}/${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BRANCH}-${COMMIT}.
 
 gsutil cp disk.raw.tar.gz gs://$BUCKET_PATH
 
-gcloud compute --project=$PROJECT images delete buildkite-agent
+gcloud compute --quiet --project=$PROJECT images delete buildkite-agent
 
 gcloud compute --project=$PROJECT \
     images create buildkite-agent \
