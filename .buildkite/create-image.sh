@@ -1,5 +1,10 @@
 #!/bin/bash
 set -e
+set -x
+
+buildkite-agent artifact download disk.raw.tar.gz .
+
+gcloud auth activate-service-account --key-file=$GCLOUD_CREDENTIAL_FILE
 
 buildkite-agent artifact download disk.raw.tar.gz .
 
