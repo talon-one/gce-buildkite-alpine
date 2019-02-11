@@ -72,7 +72,7 @@ stop () {
     for i in {1..120}
     do
         kill -0 $(cat /var/run/buildkite.*.pid) &> /dev/null
-        if [ $status -eq 0 ]; then
+        if [ $? -eq 0 ]; then
             break
         fi
         echo "Waiting for the process to finish"
