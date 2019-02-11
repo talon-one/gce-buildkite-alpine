@@ -26,3 +26,4 @@ services:
     volumes:
       - /tmp/docker-credential-file:/tmp/gcloud-credential-file
       - ../:/app/
+      - /usr/sbin/buildkite-agent:/usr/bin/buildkite-agent

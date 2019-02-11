@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-pwd
-ls -la
+buildkite-agent artifact download disk.raw.tar.gz .
 
 BUCKET_PATH="${BUCKET}/${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BRANCH}${BUILDKITE_BUILD_ID}.tar.gz"
 
