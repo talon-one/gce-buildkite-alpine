@@ -4,6 +4,8 @@ set -x
 
 buildkite-agent artifact download disk.raw.tar.gz .
 
+gcloud auth activate-service-account --key-file=$GCLOUD_CREDENTIAL_FILE
+
 BUCKET_PATH="${BUCKET}/${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BRANCH}${BUILDKITE_BUILD_ID}.tar.gz"
 
 gsutil cp disk.raw.tar.gz gs://$BUCKET_PATH
