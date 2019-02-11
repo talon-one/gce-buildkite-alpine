@@ -22,6 +22,9 @@ services:
         - BUILDKITE_PIPELINE_SLUG
         - BUILDKITE_BRANCH
         - BUILDKITE_BUILD_ID
+        - BUILDKITE_COMMIT
+        - BUILDKITE_BUILD_URL
+        - BUILDKITE_REPO
     working_dir: "/app"
     command: "/app/.buildkite/create-image.sh"
     volumes:
