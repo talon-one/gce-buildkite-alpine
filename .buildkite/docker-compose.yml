@@ -18,6 +18,7 @@ services:
         - CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=/tmp/gcloud-credential-file
         - BUCKET
         - PROJECT
+        - BUILDKITE_AGENT_ACCESS_TOKEN
         - BUILDKITE_PIPELINE_SLUG
         - BUILDKITE_BRANCH
         - BUILDKITE_BUILD_ID
