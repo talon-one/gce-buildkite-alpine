@@ -26,7 +26,7 @@ start() {
     # fetch priority
     priority=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-priority" -H "Metadata-Flavor: Google")
     if [ $? -ne 0 ]; then
-        priority=$(date --utc +"%Y%m%d%H%m%S")
+        priority=$(date --utc +"%s")
     fi
     arguments="$arguments --priority $priority"
 
@@ -59,6 +59,7 @@ END
 
     for i in $(seq 1 $agent_count); do
         nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments &> /var/log/buildkite.$i.log &
+        echo $! > /var/run/buildkite.$i.pid
     done
 
     # start nginx (for health)
@@ -66,7 +67,10 @@ END
 }
 
 stop () {
-    killall -15 buildkite-agent &> /dev/null
+    kill -15 $(cat /var/run/buildkite.*.pid)
     sleep 3
-    killall -9 buildkite-agent &> /dev/null
+    kill -9 $(cat /var/run/buildkite.*.pid)
+    rm /var/run/buildkite.*.pid
+    /etc/init.d/nginx stop
+    exit 0
 }

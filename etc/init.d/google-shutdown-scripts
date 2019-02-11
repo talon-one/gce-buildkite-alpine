@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 depend() {
-    after net network-online logger google-instance-setup google-network-daemon
+    before net network-online logger google-instance-setup google-network-daemon
     provide google-shutdown-scripts
 }
 
