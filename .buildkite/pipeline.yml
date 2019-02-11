@@ -25,7 +25,9 @@ steps:
 
   - block: "Deploy :rocket:"
     prompt: "Release image and restart buildkite agents?"
-  - command: "/app/.buildkite/release-image.sh"
+
+  - label: ":rocket:"
+    command: "/app/.buildkite/release-image.sh"
     plugins:
       docker-compose#v2.5.1:
         config: .buildkite/docker-compose.yml
