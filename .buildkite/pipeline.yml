@@ -32,7 +32,7 @@ steps:
         required: true
         default: "$INSTANCE_GROUP"
       - text: "Zone"
-        key: "zonr"
+        key: "zone"
         hint: "The google compute zone to operate in"
         required: true
         default: "$ZONE"
