@@ -31,4 +31,4 @@ gsutil rm gs://$BUCKET_PATH
 
 
 
-gcloud beta compute --project=$PROJECT instance-groups managed rolling-action replace $INSTANCE_GROUP --max-surge=20% --max-unavailable=20% --min-ready=60s
+gcloud beta compute --quiet --project=$PROJECT instance-groups managed rolling-action replace $INSTANCE_GROUP --max-surge=20% --max-unavailable=20% --min-ready=60s
