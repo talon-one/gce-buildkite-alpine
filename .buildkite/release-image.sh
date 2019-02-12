@@ -2,6 +2,7 @@
 set -e
 
 INSTANCE_GROUP=$(buildkite-agent meta-data get instance-group)
+ZONE=$(buildkite-agent meta-data get zone)
 
 buildkite-agent artifact download disk.raw.tar.gz .
 
@@ -31,4 +32,4 @@ gsutil rm gs://$BUCKET_PATH
 
 
 
-gcloud beta compute --quiet --project=$PROJECT instance-groups managed rolling-action replace $INSTANCE_GROUP --max-surge=20% --max-unavailable=20% --min-ready=60s
+gcloud beta compute --quiet --project=$PROJECT instance-groups managed rolling-action replace $INSTANCE_GROUP --max-surge=20% --max-unavailable=20% --min-ready=60s --zone=$ZONE

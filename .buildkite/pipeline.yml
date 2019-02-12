@@ -29,8 +29,13 @@ steps:
       - text: "Instance Group"
         key: "instance-group"
         hint: "The google compute instance group to restart"
-        required: false
+        required: true
         default: "$INSTANCE_GROUP"
+      - text: "Zone"
+        key: "zonr"
+        hint: "The google compute zone to operate in"
+        required: true
+        default: "$ZONE"
 
   - label: ":rocket:"
     command: "/app/.buildkite/release-image.sh"
