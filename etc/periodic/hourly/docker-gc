@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
 
+ContainerFilter=$(cat <<EOF
+.Created+60*60<now
+EOF
+)
 
-
-filter=$(cat <<EOF
+ImageFilter=$(cat <<EOF
 .Created+60*60<now
 and (
         (.RepoTags | contains(["buildkite"]))
@@ -13,14 +16,22 @@ and (
 EOF
 )
 
+NetworkFilter=$(cat <<EOF
+.Created+60*60<now
+and (.Name | contains(["buildkite"]))
+EOF
+)
+
 # try gentle first
-docker-purge --containers '.Created+60*60<now'
-docker-purge --images "$filter"
-docker-purge --networks '.Created+60*60<now'
+# stop containers
+docker-purge --containers --container.kill="9" "$ContainerFilter"
+docker-purge --containers "$ContainerFilter"
+docker-purge --images "$ImageFilter"
+docker-purge --networks "$NetworkFilter"
 
 
-docker-purge --force --all --containers '.Created+60*60<now'
-docker-purge --force --all --images "$filter"
-docker-purge --force --all --networks '.Created+60*60<now'
+docker-purge --force --all --containers "$ContainerFilter"
+docker-purge --force --all --images "$ImageFilter"
+docker-purge --force --all --networks "$NetworkFilter"
 
 logger -t docker-gc Cleaned Containers, Images and Networks
