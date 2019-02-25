@@ -18,7 +18,7 @@ EOF
 
 NetworkFilter=$(cat <<EOF
 .Created+60*60<now
-and (.Name | contains(["buildkite"]))
+and (.Name | contains("buildkite"))
 EOF
 )
 
