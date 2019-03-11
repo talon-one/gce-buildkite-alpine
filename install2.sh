@@ -164,3 +164,7 @@ printf "\e[7mInstalling nginx\e[0m\n"
 
 apk add nginx
 cp $SCRIPTPATH/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# add github-comment
+cp $SCRIPTPATH/usr/sbin/github-comment /usr/sbin/github-comment
+chmod 0755 /usr/sbin/github-comment
