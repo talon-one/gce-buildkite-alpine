@@ -23,7 +23,7 @@ if {! [file exists gce-buildkite-alpine.iso]} {
 
 # Start the guest VM
 
-spawn qemu-img create -f raw disk.raw 100G
+spawn qemu-img create -f raw disk.raw 40G
 lassign [wait] pid spawnid os_error_flag value
 
 if {$os_error_flag == -1 || $value != 0} {

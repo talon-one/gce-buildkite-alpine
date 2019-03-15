@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+SIZE=$(df / --output=avail | tail -1)
+# if size is less then 1000mb
+if [ $SIZE -lt 1000000 ]; then
+    docker-purge --images
+    docker-purge --force --all --images
+fi
+
+logger -t docker-gc Cleaned Images because disk space was too low
