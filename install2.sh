@@ -83,6 +83,8 @@ cp $SCRIPTPATH/etc/subgid /etc/subgid
 # install garbage collection cronjobs
 cp $SCRIPTPATH/etc/periodic/hourly/docker-gc /etc/periodic/hourly/docker-gc
 chmod 0700 /etc/periodic/hourly/docker-gc
+cp $SCRIPTPATH/etc/periodic/hourly/docker-gc-free-space /etc/periodic/hourly/docker-gc-free-space
+chmod 0700 /etc/periodic/hourly/docker-gc-free-space
 cp $SCRIPTPATH/usr/sbin/docker-purge /usr/sbin/docker-purge
 
 # install docker-credential-file
