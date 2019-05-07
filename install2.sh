@@ -110,8 +110,8 @@ mkdir /etc/buildkite-agent 2>&1 || true
 mkdir /tmp/buildkite 2>&1 || true
 pushd /tmp/buildkite
 # download and install
-wget https://github.com/buildkite/agent/releases/download/v3.5.1/buildkite-agent-linux-amd64-3.5.1.tar.gz
-tar -xzf buildkite-agent-linux-amd64-3.5.1.tar.gz
+wget https://github.com/buildkite/agent/releases/download/v3.11.2/buildkite-agent-linux-amd64-3.11.2.tar.gz
+tar -xzf buildkite-agent-linux-amd64-3.11.2.tar.gz
 mv buildkite-agent /usr/sbin/buildkite-agent
 popd
 # setup permissions
