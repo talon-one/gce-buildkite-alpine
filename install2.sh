@@ -94,7 +94,7 @@ rc-update add docker-credential-file default
 
 # install docker compose
 printf "\e[7mInstalling Docker Compose\e[0m\n"
-apk add python py-pip gcc
+apk add python py-pip gcc libffi
 pip install --upgrade pip
 pip install docker-compose
 
