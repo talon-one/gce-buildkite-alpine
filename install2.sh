@@ -33,7 +33,7 @@ printf "\e[7mInstalling Google Services\e[0m\n"
 # set timezone to UTC
 ln -sf /etc/zoneinfo/UTC /etc/localtime
 # install dependencies
-apk add git sudo shadow dhclient coreutils python python-dev py-setuptools ethtool iproute2
+apk add git sudo shadow dhclient coreutils python python-dev dev86 py-setuptools ethtool iproute2
 # cleanup old runs
 rm -rf /tmp/compute-image-packages 2>&1 || true
 # clone the services
