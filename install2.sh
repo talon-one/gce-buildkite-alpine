@@ -33,7 +33,7 @@ printf "\e[7mInstalling Google Services\e[0m\n"
 # set timezone to UTC
 ln -sf /etc/zoneinfo/UTC /etc/localtime
 # install dependencies
-apk add git sudo shadow dhclient coreutils python py-setuptools ethtool iproute2
+apk add git sudo shadow dhclient coreutils python python-dev dev86 musl-dev openssl-dev make py-setuptools ethtool iproute2
 # cleanup old runs
 rm -rf /tmp/compute-image-packages 2>&1 || true
 # clone the services
@@ -94,7 +94,8 @@ rc-update add docker-credential-file default
 
 # install docker compose
 printf "\e[7mInstalling Docker Compose\e[0m\n"
-apk add python py-pip
+apk add python py-pip gcc libffi libffi-dev
+pip install --upgrade pip
 pip install docker-compose
 
 
@@ -110,8 +111,8 @@ mkdir /etc/buildkite-agent 2>&1 || true
 mkdir /tmp/buildkite 2>&1 || true
 pushd /tmp/buildkite
 # download and install
-wget https://github.com/buildkite/agent/releases/download/v3.5.1/buildkite-agent-linux-amd64-3.5.1.tar.gz
-tar -xzf buildkite-agent-linux-amd64-3.5.1.tar.gz
+wget https://github.com/buildkite/agent/releases/download/v3.11.2/buildkite-agent-linux-amd64-3.11.2.tar.gz
+tar -xzf buildkite-agent-linux-amd64-3.11.2.tar.gz
 mv buildkite-agent /usr/sbin/buildkite-agent
 popd
 # setup permissions

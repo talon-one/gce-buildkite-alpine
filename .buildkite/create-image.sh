@@ -16,7 +16,7 @@ BUCKET_PATH="${BUCKET}/${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BRANCH}-${COMMIT}.
 
 gsutil cp disk.raw.tar.gz gs://$BUCKET_PATH
 gcloud compute --project=$PROJECT \
-    images create buildkite-agent-3-5-1-${BUILDKITE_BRANCH}-${COMMIT} \
+    images create buildkite-agent-3-11-2-${BUILDKITE_BRANCH}-${COMMIT} \
     --family=alpine \
     --description="$BUILDKITE_BRANCH $BUILDKITE_COMMIT on $BUILDKITE_REPO ($BUILDKITE_BUILD_URL)" \
     --source-uri=https://storage.googleapis.com/$BUCKET_PATH
