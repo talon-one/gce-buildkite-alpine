@@ -58,7 +58,7 @@ END
     fi
 
     for i in $(seq 1 $agent_count); do
-        nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments &>> /var/log/buildkite.$i.log &
+        nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments 2>&1 >> /var/log/buildkite.$i.log &
         sleep 1
         echo $! > /var/run/buildkite.$i.pid
     done
