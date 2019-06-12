@@ -58,7 +58,8 @@ END
     fi
 
     for i in $(seq 1 $agent_count); do
-        nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments &> /var/log/buildkite.$i.log &
+        nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments &>> /var/log/buildkite.$i.log &
+        sleep 1
         echo $! > /var/run/buildkite.$i.pid
     done
 
@@ -69,7 +70,7 @@ END
 stop () {
     kill -15 $(cat /var/run/buildkite.*.pid)
 
-    for i in {1..120}
+    for i in {1..600}
     do
         kill -0 $(cat /var/run/buildkite.*.pid) &> /dev/null
         if [ $? -eq 0 ]; then
