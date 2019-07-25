@@ -173,4 +173,4 @@ cp $SCRIPTPATH/usr/sbin/github-comment /usr/sbin/github-comment
 chmod 0755 /usr/sbin/github-comment
 
 # adding tmpfs to fstab
-printf "tmpfs /tmpfs/ tmpfs defaults,size=2G 0 0\n" >> /etc/fstab
+printf "tmpfs /home/buildkite/builds/ tmpfs defaults 0 0\n" >> /etc/fstab
