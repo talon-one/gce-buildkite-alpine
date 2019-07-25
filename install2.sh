@@ -171,3 +171,6 @@ cp $SCRIPTPATH/etc/nginx/nginx.conf /etc/nginx/nginx.conf
 # add github-comment
 cp $SCRIPTPATH/usr/sbin/github-comment /usr/sbin/github-comment
 chmod 0755 /usr/sbin/github-comment
+
+# adding tmpfs to fstab
+printf "tmpfs /tmpfs/ tmpfs defaults,size=2G 0 0" >> /etc/fstab
