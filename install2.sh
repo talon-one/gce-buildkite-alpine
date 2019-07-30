@@ -172,5 +172,9 @@ cp $SCRIPTPATH/etc/nginx/nginx.conf /etc/nginx/nginx.conf
 cp $SCRIPTPATH/usr/sbin/github-comment /usr/sbin/github-comment
 chmod 0755 /usr/sbin/github-comment
 
+apk add htop
+
 # adding tmpfs to fstab
-printf "tmpfs /home/buildkite/builds/ tmpfs defaults 0 0\n" >> /etc/fstab
+# printf "tmpfs /home/buildkite/builds/ tmpfs defaults 0 0\n" >> /etc/fstab
+# this needs some improvement: 1. limit the size to 50% of available memory using size=50%
+#                              2. when the folder is full write to hdd

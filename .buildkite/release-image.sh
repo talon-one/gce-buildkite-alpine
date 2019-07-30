@@ -25,7 +25,7 @@ set -e
 gcloud compute --project=$PROJECT \
     images create buildkite-agent \
     --family=alpine \
-    --description="$BUILDKITE_BRANCH $BUILDKITE_COMMIT on $BUILDKITE_REPO ($BUILDKITE_BUILD_URL)" \
+    --description="$BUILDKITE_BRANCH $BUILDKITE_COMMIT on $BUILDKITE_REPO ($BUILDKITE_BUILD_URL)\nTo revert an image: delete buildkite-agent image and duplicate an old image using gcloud compute --project=XXX images create buildkite-agent --source-image=buildkite-agent-XXX" \
     --source-uri=https://storage.googleapis.com/$BUCKET_PATH
 
 gsutil rm gs://$BUCKET_PATH
