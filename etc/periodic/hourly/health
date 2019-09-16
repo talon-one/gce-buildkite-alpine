@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+ # mark as unhealthy (google cloud will fail health check and this instance will be killed)
+kill -0 $(cat /var/run/buildkite.*.pid) &> /dev/null
+if [ $? -ne 0 ]; then
+    /etc/init.d/nginx stop
+fi
