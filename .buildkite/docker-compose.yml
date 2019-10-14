@@ -13,7 +13,7 @@ services:
       - ../:/build
 
   cloud-sdk:
-    image: google/cloud-sdk:latest
+    image: google/cloud-sdk:266.0.0
     environment:
         - GCLOUD_CREDENTIAL_FILE=/tmp/gcloud-credential-file
         - BUCKET
