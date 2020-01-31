@@ -5,14 +5,14 @@ depend() {
 }
 
 start() {
-    arguments="--build-path /home/buildkite/builds --plugins-path /home/buildkite/plugins --hooks-path=/home/buildkite/hooks"
+    arguments=""
     # fetch name
     name=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
     status=$?
     if [ $status -ne 0 ]; then
         name=$(hostname)
     fi
-    arguments="$arguments --name $name-%n"
+    
 
     # fetch token
     token=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-token" -H "Metadata-Flavor: Google")
@@ -21,7 +21,7 @@ start() {
         echo "Unable to get buildkite-token"
         exit $status
     fi
-    arguments="$arguments --token $token"
+    export BUILDKITE_AGENT_TOKEN=$token
 
     # fetch priority
     priority=$(curl --fail --silent "http://metadata.google.internal/computeMetadata/v1/instance/attributes/buildkite-priority" -H "Metadata-Flavor: Google")
@@ -58,10 +58,27 @@ END
     fi
 
     for i in $(seq 1 $agent_count); do
-        nohup sudo --user buildkite /usr/sbin/buildkite-agent start $arguments 2>&1 >> /var/log/buildkite.$i.log &
+        if [ ! -d "/home/buildkite/$i" ]; then
+            mkdir --mode 0755 /home/buildkite/$i
+            mkdir --mode 0755 /home/buildkite/$i/builds
+            mkdir --mode 0755 /home/buildkite/$i/plugins
+            mkdir --mode 0755 /home/buildkite/$i/hooks
+            chown -hR buildkite:buildkite /home/buildkite/$i
+        fi
+        final_arguments="$arguments --name $name-$i --build-path /home/buildkite/$i/builds --plugins-path /home/buildkite/$i/plugins --hooks-path=/home/buildkite/$i/hooks"
+        nohup sudo --preserve-env=BUILDKITE_AGENT_TOKEN --user buildkite /usr/sbin/buildkite-agent start $final_arguments 2>&1 >> /var/log/buildkite.$i.log &
         sleep 1
         echo $! > /var/run/buildkite.$i.pid
     done
+
+    # check if processes run
+    sleep 1
+    kill -0 $(cat /var/run/buildkite.*.pid) &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "failed to start buildkite agents"
+        cat /var/log/buildkite.*.log
+        exit 1
+    fi
 
     # start nginx (for health)
     /etc/init.d/nginx start
