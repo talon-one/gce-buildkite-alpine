@@ -135,9 +135,6 @@ cp $SCRIPTPATH/etc/init.d/buildkite-agent /etc/init.d/buildkite-agent
 chmod 0700 /etc/init.d/buildkite-agent
 rc-update add buildkite-agent default
 
-#mkdir --mode 0755 /home/buildkite/builds
-#mkdir --mode 0755 /home/buildkite/plugins
-#mkdir --mode 0755 /home/buildkite/hooks
 chown -hR buildkite:buildkite /home/buildkite
 
 
