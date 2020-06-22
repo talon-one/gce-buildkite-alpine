@@ -111,7 +111,7 @@ mkdir /etc/buildkite-agent 2>&1 || true
 mkdir /tmp/buildkite 2>&1 || true
 pushd /tmp/buildkite
 # download and install
-wget -O buildkite-agent.tar.gz https://github.com/buildkite/agent/releases/download/v3.19.0/buildkite-agent-linux-amd64-3.19.0.tar.gz
+wget -O buildkite-agent.tar.gz https://github.com/buildkite/agent/releases/download/v3.22.1/buildkite-agent-linux-amd64-3.22.1.tar.gz
 tar -xzf buildkite-agent.tar.gz
 mv buildkite-agent /usr/sbin/buildkite-agent
 popd
