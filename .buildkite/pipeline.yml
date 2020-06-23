@@ -2,7 +2,7 @@ steps:
   - label: ":building_construction: Building Image"
     artifact_paths: ./*.tar.gz
     plugins:
-      docker-compose#v2.5.1:
+      docker-compose#v3.3.0:
         config: .buildkite/docker-compose.yml
         run: builder
     retry:
@@ -16,7 +16,7 @@ steps:
   - label: ":arrow_up: creating image"
     command: "/app/.buildkite/create-image.sh"
     plugins:
-      docker-compose#v2.5.1:
+      docker-compose#v3.3.0:
         config: .buildkite/docker-compose.yml
         run: cloud-sdk
 
@@ -40,6 +40,6 @@ steps:
   - label: ":rocket:"
     command: "/app/.buildkite/release-image.sh"
     plugins:
-      docker-compose#v2.5.1:
+      docker-compose#v3.3.0:
         config: .buildkite/docker-compose.yml
         run: cloud-sdk
