@@ -3,15 +3,14 @@ This repo contains everything you need use buildkite on GCE.
 
 
 ## Use docker to build the image
-1. Make sure you download and place `alpine-virt-3.8.0-x86_64.iso` in this folder
-2. Run `docker run --rm --volume $(pwd):/build justincormack/alpine-qemu /build/docker-entrypoint.sh` in this folder
-3. Get a cup of coffee
-4. disk.raw.tar.gz should be created
+1. Run `make build`
+2. Get a cup of coffee
+3. disk.raw.tar.gz should be created
 
 
 ## Without docker
 1. Make sure you download and place `alpine-virt-3.8.0-x86_64.iso` in this folder
-2. Make sure you have installed expect qemu and mkisofs
+2. Make sure you have installed expect, qemu and mkisofs
 3. run create-vm.exp
 4. Get a cup of coffee
 5. disk.raw.tar.gz should be created

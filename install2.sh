@@ -120,15 +120,15 @@ chmod -R 0755 /etc/buildkite-agent
 chmod 0755 /usr/sbin/buildkite-agent
 
 # add a group
-groupadd --gid 100000 buildkite
+addgroup -g 100000 buildkite
 sleep 1
 
 # add user
-useradd --create-home --shell /sbin/nologin --uid 100000 --gid 100000 buildkite
+adduser -D -s /sbin/nologin -u 100000 -G buildkite buildkite
 sleep 1
 
 # add user to docker group
-usermod --groups docker --append buildkite
+adduser buildkite docker
 sleep 1
 
 cp $SCRIPTPATH/etc/init.d/buildkite-agent /etc/init.d/buildkite-agent
